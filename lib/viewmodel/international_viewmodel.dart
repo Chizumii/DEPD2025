@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:depd_mvvm_2025/model/model.dart';
 import 'package:depd_mvvm_2025/data/response/api_response.dart';
-import 'package:depd_mvvm_2025/data/response/status.dart';
-// Import Repository Baru
 import 'package:depd_mvvm_2025/repository/international_repository.dart'; 
 
 class InternationalViewModel with ChangeNotifier {
-  // Ganti HomeRepository dengan InternationalRepository
   final _interRepo = InternationalRepository();
 
-  // --- 1. SEARCH DESTINATION ---
   
   ApiResponse<List<InternationalDestination>> internationalDestinationList = ApiResponse.notStarted();
 
@@ -20,7 +16,6 @@ class InternationalViewModel with ChangeNotifier {
 
   Future<List<InternationalDestination>> searchDestinations(String query) async {
     try {
-      // Panggil dari InternationalRepository
       final list = await _interRepo.fetchInternationalDestinationList(query);
       return list;
     } catch (e) {
