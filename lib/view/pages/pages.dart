@@ -8,4 +8,5 @@ import 'package:depd_mvvm_2025/data/response/status.dart';
 
 part 'home_page.dart';
 part 'international_page.dart';
+part 'hello_world_page.dart';
 

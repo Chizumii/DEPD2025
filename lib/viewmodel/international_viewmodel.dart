@@ -1,31 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:depd_mvvm_2025/model/model.dart';
 import 'package:depd_mvvm_2025/data/response/api_response.dart';
-import 'package:depd_mvvm_2025/repository/international_repository.dart'; 
+import 'package:depd_mvvm_2025/repository/international_repository.dart'; // Pastikan import ini benar
 
 class InternationalViewModel with ChangeNotifier {
+  // Menggunakan Repository khusus Internasional
   final _interRepo = InternationalRepository();
-
   
-  ApiResponse<List<InternationalDestination>> internationalDestinationList = ApiResponse.notStarted();
-
-  void setInternationalDestinationList(ApiResponse<List<InternationalDestination>> response) {
-    internationalDestinationList = response;
-    notifyListeners();
-  }
-
+  // Fungsi ini dipanggil langsung oleh widget Autocomplete di View
   Future<List<InternationalDestination>> searchDestinations(String query) async {
     try {
-      final list = await _interRepo.fetchInternationalDestinationList(query);
+      // Memanggil method 'findInterDestination' dari Repository
+      final list = await _interRepo.findInterDestination(query);
       return list;
     } catch (e) {
       debugPrint("Error saat mencari negara: $e");
-      return [];
+      return []; // Kembalikan list kosong agar aplikasi tidak crash
     }
   }
 
-  // --- 2. CEK ONGKIR ---
-
+  // State untuk menampung hasil ongkir (List Costs)
   ApiResponse<List<Costs>> costList = ApiResponse.notStarted();
 
   void setCostList(ApiResponse<List<Costs>> response) {
@@ -33,25 +27,32 @@ class InternationalViewModel with ChangeNotifier {
     notifyListeners();
   }
 
+  // State untuk loading overlay (opsional)
   bool isLoading = false;
   void setLoading(bool value) {
     isLoading = value;
     notifyListeners();
   }
 
+  // Fungsi Check Cost
   Future checkInternationalCost(String origin, String destination, int weight, String courier) async {
     setLoading(true);
     setCostList(ApiResponse.loading());
     
-    // Panggil dari InternationalRepository
-    _interRepo.checkInternationalCost(origin, destination, weight, courier)
-      .then((value) {
-        setCostList(ApiResponse.completed(value));
-        setLoading(false);
-      })
-      .onError((error, _) {
-        setCostList(ApiResponse.error(error.toString()));
-        setLoading(false);
-      });
+    // Memanggil method 'countInterCost' dengan Named Parameters (sesuai Repository)
+    _interRepo.countInterCost(
+      origin: origin,
+      destination: destination,
+      weight: weight,
+      courier: courier,
+    ).then((value) {
+      // Sukses
+      setCostList(ApiResponse.completed(value));
+      setLoading(false);
+    }).onError((error, _) {
+      // Gagal
+      setCostList(ApiResponse.error(error.toString()));
+      setLoading(false);
+    });
   }
 }
